@@ -198,7 +198,7 @@ msgstr "Харах"
 #: cms/static/js/features_jsx/studio/CourseOrLibraryListing.jsx
 #: common/static/bundles/CourseOrLibraryListing.js
 msgid "Archive"
-msgstr ""
+msgstr "архив"
 
 #. Translators: This is the status of an active video upload
 #: cms/static/js/models/active_video_upload.js cms/static/js/views/assets.js
