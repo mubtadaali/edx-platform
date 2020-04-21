@@ -3,7 +3,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Modal, Button } from '@edx/paragon';
+import { Modal, Button } from '@edx/paragon/static';
 
 export class CourseOrLibraryListing extends React.Component {
     constructor(props) {
