@@ -49,7 +49,7 @@ def get_base_template_context(site):
 
     return {
         # Platform information
-        'homepage_url': marketing_link('ROOT'),
+        'homepage_url': getattr(settings, 'MARKETING_SITE_ROOT', None),
         'dashboard_url': dashboard_url,
         'template_revision': getattr(settings, 'EDX_PLATFORM_REVISION', None),
         'platform_name': get_config_value_from_site_or_settings(
