@@ -123,8 +123,10 @@ def create_user_link_with_edly_sub_organization(request, user):
         object: EdlyUserProfile object.
 
     """
-    # User registration is possible only on LMS so we only get edly sub org for LMS site
-    edly_sub_org = request.site.edly_sub_org_for_lms
+    try:
+        edly_sub_org = request.site.edly_sub_org_for_lms
+    except EdlySubOrganization.DoesNotExist:
+        edly_sub_org = request.site.edly_sub_org_for_studio
     edly_user_profile, __ = EdlyUserProfile.objects.get_or_create(user=user)
     edly_user_profile.edly_sub_organizations.add(edly_sub_org)
     edly_user_profile.save()
