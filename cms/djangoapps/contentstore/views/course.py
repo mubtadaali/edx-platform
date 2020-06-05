@@ -31,7 +31,7 @@ from openedx.core.djangoapps.content.course_overviews.models import CourseOvervi
 from openedx.core.djangoapps.waffle_utils import WaffleSwitchNamespace
 from openedx.features.course_experience.waffle import waffle as course_experience_waffle
 from openedx.features.course_experience.waffle import ENABLE_COURSE_ABOUT_SIDEBAR_HTML
-from openedx.features.edly.utils import get_enabled_organizations
+from openedx.features.edly.utils import get_edx_org_from_cookie, get_enabled_organizations
 from six import text_type
 
 from contentstore.course_group_config import (
@@ -126,14 +126,18 @@ class AccessListFallback(Exception):
     pass
 
 
-def get_course_and_check_access(course_key, user, depth=0):
+def get_course_and_check_access(course_key, user, depth=0, request=None):
     """
     Internal method used to calculate and return the locator and course module
     for the view functions in this file.
     """
     if not has_studio_read_access(user, course_key):
         raise PermissionDenied()
+
     course_module = modulestore().get_course(course_key, depth=depth)
+    edly_user_info_cookie = request.COOKIES.get(settings.EDLY_USER_INFO_COOKIE_NAME, None) if request else None
+    if get_edx_org_from_cookie(edly_user_info_cookie) != course_module.org:
+        raise PermissionDenied()
     return course_module
 
 
@@ -666,7 +670,7 @@ def course_index(request, course_key):
     # A depth of None implies the whole course. The course outline needs this in order to compute has_changes.
     # A unit may not have a draft version, but one of its components could, and hence the unit itself has changes.
     with modulestore().bulk_operations(course_key):
-        course_module = get_course_and_check_access(course_key, request.user, depth=None)
+        course_module = get_course_and_check_access(course_key, request.user, depth=None, request=request)
         if not course_module:
             raise Http404
         lms_link = get_lms_link_for_item(course_module.location)

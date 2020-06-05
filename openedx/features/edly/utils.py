@@ -91,6 +91,24 @@ def get_edly_sub_org_from_cookie(encoded_cookie_data):
     return decoded_cookie_data['edly-sub-org']
 
 
+def get_edx_org_from_cookie(encoded_cookie_data):
+    """
+    Returns edx slug from the edly-user-info cookie.
+
+    Arguments:
+        encoded_cookie_data (dict): Edly user info cookie JWT encoded string.
+
+    Returns:
+        string
+    """
+
+    if not encoded_cookie_data:
+        return ''
+
+    decoded_cookie_data = decode_edly_user_info_cookie(encoded_cookie_data)
+    return decoded_cookie_data['edx-org']
+
+
 def get_enabled_organizations(request):
     """
     Helper method to get linked organizations for request site.
