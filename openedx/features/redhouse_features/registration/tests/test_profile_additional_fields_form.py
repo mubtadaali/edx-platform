@@ -6,18 +6,13 @@ from openedx.features.redhouse_features.registration.forms import AdditionalRegi
 class TestProfileAdditionalFields(TestCase):
 
     def setUp(self):
-        self.form = AdditionalRegistrationFieldsForm({'sch_org': 'my test school', 'user_type': 'student',
-                                         'organization_type': 'corporate', 'phone': '03436534876'})
-        self.invalid_form = AdditionalRegistrationFieldsForm({'sch_org': '', 'user_type': '',
-                                                 'organization_type': '', 'phone': ''})
+        self.form = AdditionalRegistrationFieldsForm({'sch_org': 'my test school', 'organization_type': 'corporate',
+                                                      'phone': '03436534876'})
+        self.invalid_form = AdditionalRegistrationFieldsForm({'sch_org': '', 'organization_type': '', 'phone': ''})
 
     # Test: is phone exists in form
     def test_phone_field_exist(self):
         self.assertTrue('phone' in self.form.fields.keys())
-
-    # Test: is user_type field exists in form
-    def test_user_type_field_exist(self):
-        self.assertTrue('user_type' in self.form.fields.keys())
 
     # Test: does form has organization_type field
     def test_organization_type_field_exist(self):

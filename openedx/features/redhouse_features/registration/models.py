@@ -5,10 +5,6 @@ from django.db import models
 # Backwards compatible settings.AUTH_USER_MODEL
 USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
-USER_TYPES = [
-        ('student', 'Student'),
-        ('staff', 'Staff')
-    ]
 ORGANIZATIONS_TYPES = [
         ('corporate', 'Corporate'),
         ('school district', 'School District'),
@@ -24,8 +20,6 @@ class AdditionalRegistrationFields(models.Model):
         The form that wraps this model is in the forms.py file.
         """
     user = models.OneToOneField(USER_MODEL, null=True, on_delete=models.CASCADE)
-
-    user_type = models.CharField(blank=False, max_length=8, verbose_name='User Type', choices=USER_TYPES)
 
     phone = models.CharField(blank=False, max_length=16, verbose_name='Phone')
 
