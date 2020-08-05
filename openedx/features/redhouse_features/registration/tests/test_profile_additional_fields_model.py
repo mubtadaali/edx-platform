@@ -6,12 +6,8 @@ from openedx.features.redhouse_features.registration.models import AdditionalReg
 class TestProfileAdditionalFieldModel(TestCase):
 
     def setUp(self):
-        self.model = AdditionalRegistrationFields({'user_type': 'student', 'organization_type': 'corporate',
-                                                   'phone': '03458885567', 'sch_org': 'my school'})
-
-    # Test: check user type label
-    def test_user_type_field_label(self):
-        self.assertEqual(self.model._meta.get_field('user_type').verbose_name, 'User Type')
+        self.model = AdditionalRegistrationFields({'organization_type': 'corporate', 'phone': '03458885567',
+                                                   'sch_org': 'my school'})
 
     # Test: check phone label
     def test_phone_field_label(self):

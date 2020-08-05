@@ -13,16 +13,13 @@ class AdditionalRegistrationFieldsForm(forms.ModelForm):
 
     class Meta(object):
         model = AdditionalRegistrationFields
-        fields = ['sch_org', 'user_type', 'organization_type', 'phone']
+        fields = ['sch_org', 'organization_type', 'phone']
         error_messages = {
             'sch_org': {
                 'required': 'Please enter your school/organization',
             },
             'phone': {
                 'required': 'Please enter your phone number',
-            },
-            'user_type': {
-                'required': 'Please select account type',
             },
             'organization_type': {
                 'required': 'Please select organization type',
