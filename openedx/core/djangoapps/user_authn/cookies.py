@@ -22,6 +22,7 @@ from openedx.core.djangoapps.oauth_dispatch.api import create_dot_access_token, 
 from openedx.core.djangoapps.oauth_dispatch.jwt import create_jwt_from_token
 from openedx.core.djangoapps.user_api.accounts.utils import retrieve_last_sitewide_block_completed
 from openedx.core.djangoapps.user_authn.exceptions import AuthFailedError
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.features.edly.cookies import delete_logged_in_edly_cookies, set_logged_in_edly_cookies
 from student.models import CourseEnrollment
 
@@ -100,10 +101,12 @@ def standard_cookie_settings(request):
         _expires_time = time.time() + max_age
         expires = cookie_date(_expires_time)
 
+    domain = configuration_helpers.get_value('SESSION_COOKIE_DOMAIN', settings.SESSION_COOKIE_DOMAIN)
+
     cookie_settings = {
         'max_age': max_age,
         'expires': expires,
-        'domain': settings.SESSION_COOKIE_DOMAIN,
+        'domain': domain,
         'path': '/',
         'httponly': None,
     }

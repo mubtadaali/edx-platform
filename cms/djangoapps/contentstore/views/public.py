@@ -43,6 +43,8 @@ def login_page(request):
     Display the login form.
     """
     csrf_token = csrf(request)['csrf_token']
+    if request.user.is_authenticated:
+        return redirect('/course/')
     if (settings.FEATURES['AUTH_USE_CERTIFICATES'] and
             ssl_get_cert_from_request(request)):
         # SSL login doesn't require a login view, so redirect
