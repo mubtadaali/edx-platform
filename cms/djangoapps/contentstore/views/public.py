@@ -42,6 +42,11 @@ def login_page(request):
     """
     Display the login form.
     """
+    # Redirect user to LMS login page if `DISABLE_STUDIO_SSO_OVER_LMS` feature
+    # flag is not enabled and user tries to access the signin page using URL.
+    if not settings.FEATURES.get('DISABLE_STUDIO_SSO_OVER_LMS', False):
+        return redirect_with_get(settings.FRONTEND_LOGIN_URL, request.GET, False)
+
     csrf_token = csrf(request)['csrf_token']
     if request.user.is_authenticated:
         return redirect('/course/')
