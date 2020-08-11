@@ -238,7 +238,32 @@
                                 options: fieldsData.preferred_language.options,
                                 persistChanges: true
                             })
-                        }
+                        },
+                        {
+                          view: new AccountSettingsFieldViews.TextFieldView({
+                              model: userAccountModel,
+                              title: gettext('Phone'),
+                              valueAttribute: 'phone',
+                              persistChanges: true
+                          })
+                        },
+                        {
+                          view: new AccountSettingsFieldViews.TextFieldView({
+                              model: userAccountModel,
+                              title: gettext('School / Organization'),
+                              valueAttribute: 'sch_org',
+                              persistChanges: true
+                          })
+                        },
+                        {
+                            view: new AccountSettingsFieldViews.DropdownFieldView({
+                                model: userAccountModel,
+                                title: gettext('Organization Type'),
+                                valueAttribute: 'organization_type',
+                                options: fieldsData.organization_type.options,
+                                persistChanges: true
+                            })
+                        },
                     ]
                 }
             ];
