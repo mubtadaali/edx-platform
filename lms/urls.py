@@ -1051,3 +1051,16 @@ urlpatterns += [
 ]
 
 urlpatterns.extend(plugin_urls.get_patterns(plugin_constants.ProjectType.LMS))
+
+if settings.ADD_EDLY_URLS:
+    urlpatterns += [
+        url(r'^api/edly_panel/', include('edly_panel_app.api.urls', namespace='edly_panel_api')),
+    ]
+
+
+if settings.FEATURES.get('ENABLE_MULTI_SITE_ADMIN_PANEL'):
+    from importlib import import_module
+    module_path, method = '.'.join(settings.ADMIN_SITES_SETTER.split('.')[:-1]), settings.ADMIN_SITES_SETTER.split('.')[-1]
+    admin_sites_setter = getattr(import_module(module_path), method)
+    # admin_sites_setter = import_module(settings.ADMIN_SITES_SETTER)
+    admin_sites_setter(urlpatterns)
