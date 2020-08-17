@@ -3067,6 +3067,9 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         "accomplishments_shared",
         "extended_profile",
         "secondary_email",
+        "sch_org",
+        "phone",
+        "organization_type"
     ]
 }
 

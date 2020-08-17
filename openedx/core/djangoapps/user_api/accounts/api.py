@@ -3,6 +3,7 @@
 Programmatic integration point for User API Accounts sub-application
 """
 import datetime
+import logging
 from pytz import UTC
 
 from django.utils.translation import override as override_language, ugettext as _
@@ -41,11 +42,14 @@ from openedx.core.djangoapps.user_api.errors import (
 )
 from openedx.core.djangoapps.user_api.preferences.api import update_user_preferences
 from openedx.core.lib.api.view_utils import add_serializer_errors
+from openedx.features.redhouse_features.registration.models import AdditionalRegistrationFields
 
 from .serializers import (
     AccountLegacyProfileSerializer, AccountUserSerializer,
     UserReadOnlySerializer, _visible_fields  # pylint: disable=invalid-name
 )
+
+log = logging.getLogger(__name__)
 
 # Public access point for this function.
 visible_fields = _visible_fields
@@ -178,6 +182,16 @@ def update_account_settings(requesting_user, update, username=None):
                 "user_message": _(u"The '{field_name}' field cannot be edited.").format(field_name=read_only_field)
             }
             del update[read_only_field]
+
+    additional_fields = {"sch_org", "phone", "organization_type"}.intersection(set(update.keys()))
+    if additional_fields:
+        instance = AdditionalRegistrationFields.objects.filter(user=existing_user).first()
+        if instance:
+            for field in list(additional_fields):
+                setattr(instance, field, update[field])
+            instance.save()
+        else:
+            log.error('Additional fields record does not exist')
 
     user_serializer = AccountUserSerializer(existing_user, data=update)
     legacy_profile_serializer = AccountLegacyProfileSerializer(existing_user_profile, data=update)
