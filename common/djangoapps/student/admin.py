@@ -51,12 +51,6 @@ class CourseAccessRoleForm(forms.ModelForm):
     email = forms.EmailField(required=True)
     COURSE_ACCESS_ROLES = [(role_name, role_name) for role_name in REGISTERED_ACCESS_ROLES.keys()]
     role = forms.ChoiceField(choices=COURSE_ACCESS_ROLES)
-    # [REDHOUSE CUSTOM] Making the Organization field as a choice field
-    ORGANIZATIONS = [(org_short_name, org_short_name) for org_short_name in [org['short_name']
-                                                                             for org in get_organizations()]]
-    # Adding a blank entry in choices
-    ORGANIZATIONS.insert(0, ('', ''))
-    org = forms.ChoiceField(choices=ORGANIZATIONS, required=False)
 
     def clean_course_id(self):
         """
@@ -113,10 +107,20 @@ class CourseAccessRoleForm(forms.ModelForm):
 
         return cleaned_data
 
+    @staticmethod
+    def get_orgs():
+        # [REDHOUSE CUSTOM] Making the Organization field as a choice field
+        orgs = [(org, org) for org in [org_names['short_name'] for org_names in get_organizations()]]
+        # Adding a blank entry in choices
+        orgs.insert(0, ('', ''))
+        return orgs
+
     def __init__(self, *args, **kwargs):
         super(CourseAccessRoleForm, self).__init__(*args, **kwargs)
+        self.fields['org'] = forms.ChoiceField(choices=self.get_orgs(), required=False)
         if self.instance.user_id:
             self.fields['email'].initial = self.instance.user.email
+            self.fields['org'].initial = self.instance.org
 
 
 @admin.register(CourseAccessRole)
