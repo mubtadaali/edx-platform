@@ -47,6 +47,9 @@ class EdlyUserProfile(models.Model):
     user = models.OneToOneField(User, unique=True, db_index=True, related_name='edly_profile', on_delete=models.CASCADE)
     edly_sub_organizations = models.ManyToManyField(EdlySubOrganization)
 
+    def __str__(self):
+        return self.user.username
+
     @property
     def get_linked_edly_sub_organizations(self):
         """
@@ -55,5 +58,5 @@ class EdlyUserProfile(models.Model):
         Returns:
             list: List of edly sub organizations slugs
         """
-        edly_sub_org_slugs = self.edly_sub_organizations.values_list('slug', flat=True)
+        edly_sub_org_slugs = list(self.edly_sub_organizations.values_list('slug', flat=True))
         return edly_sub_org_slugs

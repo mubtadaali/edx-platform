@@ -3,15 +3,12 @@ Sync users data according to multisites requirements
 """
 import logging
 
+from course_creators.models import CourseCreator
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-
-from course_creators.models import CourseCreator
-from student.roles import CourseInstructorRole
-from student.models import CourseAccessRole
-
 from openedx.features.edly.models import EdlyUserProfile, EdlySubOrganization
-
+from student.models import CourseAccessRole
+from student.roles import CourseCreatorRole, CourseInstructorRole
 
 log = logging.getLogger(__name__)
 User = get_user_model()
@@ -45,7 +42,8 @@ class Command(BaseCommand):
 
         linked_users_count = 0
         course_creator_count = 0
-        course_access_roles_count = 0
+        course_creator_access_roles_count = 0
+        organization_instructor_access_roles_count = 0
 
         for user in users:
             if self.create_and_link_edly_profiles(user, sub_org):
@@ -55,14 +53,20 @@ class Command(BaseCommand):
             if self.create_course_creator(user):
                 course_creator_count += 1
 
-            if  self.create_course_access_roles(user, organization):
-                course_access_roles_count += 1
+            if self.create_course_creator_access_roles(user):
+                course_creator_access_roles_count += 1
+
+            if self.create_organization_instructor_access_roles(user, organization):
+                organization_instructor_access_roles_count += 1
 
         map(self.remove_staff_access, staff_users)
 
         log.info('Edly user profiles are successfully created for %d user(s)', linked_users_count)
         log.info('Course creator objects are successfully created for %d user(s)', course_creator_count)
-        log.info('Course access roles are successfully created for %d user(s)', course_access_roles_count)
+        log.info('Course creator access roles are successfully created for %d user(s)',
+                 course_creator_access_roles_count)
+        log.info('Organization Instructor access roles are successfully created for %d user(s)',
+                 course_creator_access_roles_count)
         log.info('Staff access is removed for %d user(s)', len(staff_users))
 
     def get_sub_organization(self, sub_org_slug):
@@ -78,7 +82,7 @@ class Command(BaseCommand):
             log.info(
                 'Found existing edly user profile %s linked with sub org %s',
                 user.username,
-                sub_org
+                edly_profile.get_linked_edly_sub_organizations
             )
             return
         except EdlyUserProfile.DoesNotExist:
@@ -116,25 +120,23 @@ class Command(BaseCommand):
 
             return course_creator
 
-    def create_course_access_roles(self, user, org):
-        try:
-            course_access_role = CourseAccessRole.objects.get(user=user)
-            log.info(
-                'Found existing access role for user %s with role %s',
-                user.username,
-                course_access_role.role
-            )
-        except CourseAccessRole.DoesNotExist:
-            course_access_role = CourseAccessRole.objects.create(
-                user=user,
-                org=org,
-                role=CourseInstructorRole.ROLE
-            )
-            log.info(
-                'Created CourseAccessRole with Instructor role for user %s.',
-                user.username
-            )
-            return course_access_role
+    def create_course_creator_access_roles(self, user):
+        course_access_role = CourseAccessRole.objects.get_or_create(
+            user=user,
+            role=CourseCreatorRole.ROLE,
+            course_id=None,
+            org=''
+        )
+        return course_access_role
+
+    def create_organization_instructor_access_roles(self, user, org):
+        course_access_role = CourseAccessRole.objects.get_or_create(
+            user=user,
+            role=CourseInstructorRole.ROLE,
+            course_id=None,
+            org=org
+        )
+        return course_access_role
 
     def remove_staff_access(self, user):
         user.is_staff = False
