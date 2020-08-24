@@ -35,6 +35,8 @@ from third_party_auth import pipeline, provider
 from util.json_request import JsonResponse
 from util.password_policy_validators import normalize_password
 
+from openedx.features.edly.validators import is_edly_user_allowed_to_login
+
 log = logging.getLogger("edx.student")
 AUDIT_LOG = logging.getLogger("audit")
 
@@ -357,6 +359,9 @@ def login_user(request):
 
         if possibly_authenticated_user is None or not possibly_authenticated_user.is_active:
             _handle_failed_authentication(user, possibly_authenticated_user)
+
+        if not is_edly_user_allowed_to_login(request, possibly_authenticated_user):
+            raise AuthFailedError(_('You are not allowed to login on this site.'))
 
         _handle_successful_authentication_and_login(possibly_authenticated_user, request)
 
