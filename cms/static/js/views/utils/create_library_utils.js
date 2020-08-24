@@ -30,5 +30,24 @@ define(['jquery', 'gettext', 'common/js/components/utils/view_utils', 'js/views/
                     errorHandler(reason);
                 });
             };
+
+            this.setupOrgAutocomplete = function () {
+
+                if ($(selectors.org).children().length > 1) {
+                    // No need to populate organization dropdown which is already populated.
+                    return;
+                }
+
+                $.getJSON('/organizations', function (data) {
+                    $.each(data, function (i, item) {
+                        $(selectors.org).append(
+                            $('<option>', {
+                                value: item,
+                                text: item,
+                            })
+                        );
+                    });
+                });
+            };
         };
     });

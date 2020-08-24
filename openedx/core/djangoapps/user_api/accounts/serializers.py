@@ -22,6 +22,7 @@ from openedx.core.djangoapps.user_api.models import (
 )
 from openedx.core.djangoapps.user_api.serializers import ReadOnlyFieldsSerializerMixin
 from student.models import UserProfile, LanguageProficiency, SocialLink
+from openedx.features.redhouse_features.registration.models import AdditionalRegistrationFields
 
 from . import (
     NAME_MIN_LENGTH, ACCOUNT_VISIBILITY_PREF_KEY, PRIVATE_VISIBILITY,
@@ -102,6 +103,16 @@ class UserReadOnlySerializer(serializers.Serializer):
         except ObjectDoesNotExist:
             user_profile = None
             LOGGER.warning("user profile for the user [%s] does not exist", user.username)
+        sch_org = ""
+        phone = ""
+        organization_type = ""
+        additional_fields = AdditionalRegistrationFields.objects.filter(user=user).first()
+        if additional_fields:
+            sch_org = additional_fields.sch_org
+            phone = additional_fields.phone
+            organization_type = additional_fields.organization_type
+        else:
+            LOGGER.error("Additional fields record does not exist")
 
         try:
             account_recovery = user.account_recovery
@@ -164,6 +175,9 @@ class UserReadOnlySerializer(serializers.Serializer):
                         user_profile.social_links.all(), many=True
                     ).data,
                     "extended_profile": get_extended_profile(user_profile),
+                    "sch_org": sch_org,
+                    "phone": phone,
+                    "organization_type": organization_type
                 }
             )
 

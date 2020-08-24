@@ -34,6 +34,7 @@ from openedx.core.djangoapps.user_api.serializers import CountryTimeZoneSerializ
 from openedx.core.djangoapps.user_authn.cookies import set_logged_in_cookies
 from openedx.core.djangoapps.user_authn.views.register import create_account_with_params
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
+from openedx.features.edly.utils import create_user_link_with_edly_sub_organization
 from student.helpers import AccountValidationError
 from util.json_request import JsonResponse
 
@@ -152,6 +153,7 @@ class RegistrationView(APIView):
 
         try:
             user = create_account_with_params(request, data)
+            create_user_link_with_edly_sub_organization(request, user)
         except AccountValidationError as err:
             errors = {
                 err.field: [{"user_message": text_type(err)}]

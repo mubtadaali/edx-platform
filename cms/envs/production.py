@@ -146,6 +146,10 @@ ENTERPRISE_API_URL = ENV_TOKENS.get('ENTERPRISE_API_URL', LMS_INTERNAL_ROOT_URL 
 ENTERPRISE_CONSENT_API_URL = ENV_TOKENS.get('ENTERPRISE_CONSENT_API_URL', LMS_INTERNAL_ROOT_URL + '/consent/api/v1/')
 # Note that FEATURES['PREVIEW_LMS_BASE'] gets read in from the environment file.
 
+# Edly Configuration
+EDLY_COOKIE_SECRET_KEY = ENV_TOKENS.get('EDLY_COOKIE_SECRET_KEY', EDLY_COOKIE_SECRET_KEY)
+EDLY_JWT_ALGORITHM = ENV_TOKENS.get('EDLY_JWT_ALGORITHM', EDLY_JWT_ALGORITHM)
+
 # List of logout URIs for each IDA that the learner should be logged out of when they logout of
 # Studio. Only applies to IDA for which the social auth flow uses DOT (Django OAuth Toolkit).
 IDA_LOGOUT_URI_LIST = ENV_TOKENS.get('IDA_LOGOUT_URI_LIST', [])
@@ -259,6 +263,12 @@ WIKI_ENABLED = ENV_TOKENS.get('WIKI_ENABLED', WIKI_ENABLED)
 LOGGING = get_logger_config(LOG_DIR,
                             logging_env=ENV_TOKENS['LOGGING_ENV'],
                             service_variant=SERVICE_VARIANT)
+
+# CORS configuration
+CORS_ORIGIN_WHITELIST = ENV_TOKENS.get('CORS_ORIGIN_WHITELIST', [])
+CORS_ALLOW_CREDENTIALS = ENV_TOKENS.get('CORS_ALLOW_CREDENTIALS', CORS_ALLOW_CREDENTIALS)
+CORS_ALLOW_INSECURE = ENV_TOKENS.get('CORS_ALLOW_INSECURE', CORS_ALLOW_INSECURE)
+
 
 #theming start:
 
