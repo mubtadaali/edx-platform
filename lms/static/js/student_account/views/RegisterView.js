@@ -35,7 +35,11 @@
                     'confirm_email',
                     'country',
                     'honor_code',
-                    'terms_of_service'
+                    'terms_of_service',
+                    // Redhouse custom fields
+                    'phone',
+                    'sch_org',
+                    'organization_type'
                 ],
                 formType: 'register',
                 formStatusTpl: formStatusTpl,
