@@ -30,6 +30,7 @@ from student.models import (
     UserTestGroup
 )
 from student.roles import REGISTERED_ACCESS_ROLES
+from util.organizations_helpers import get_organizations
 from xmodule.modulestore.django import modulestore
 
 User = get_user_model()  # pylint:disable=invalid-name
@@ -106,10 +107,20 @@ class CourseAccessRoleForm(forms.ModelForm):
 
         return cleaned_data
 
+    @staticmethod
+    def get_orgs():
+        # [REDHOUSE CUSTOM] Making the Organization field as a choice field
+        orgs = [(org, org) for org in [org_names['short_name'] for org_names in get_organizations()]]
+        # Adding a blank entry in choices
+        orgs.insert(0, ('', ''))
+        return orgs
+
     def __init__(self, *args, **kwargs):
         super(CourseAccessRoleForm, self).__init__(*args, **kwargs)
+        self.fields['org'] = forms.ChoiceField(choices=self.get_orgs(), required=False)
         if self.instance.user_id:
             self.fields['email'].initial = self.instance.user.email
+            self.fields['org'].initial = self.instance.org
 
 
 @admin.register(CourseAccessRole)

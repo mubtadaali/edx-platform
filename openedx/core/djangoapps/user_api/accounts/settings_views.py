@@ -18,6 +18,7 @@ from openedx.core.djangoapps.commerce.utils import ecommerce_api_client
 from openedx.core.djangoapps.lang_pref.api import all_languages, released_languages
 from openedx.core.djangoapps.programs.models import ProgramsApiConfig
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+from openedx.features.redhouse_features.registration.models import ORGANIZATIONS_TYPES
 from openedx.core.lib.edx_api_utils import get_edx_api_data
 from openedx.core.lib.time_zone_utils import TIME_ZONE_CHOICES
 from openedx.features.enterprise_support.api import get_enterprise_customer_for_learner
@@ -95,6 +96,8 @@ def account_settings_context(request):
                 'options': all_languages(),
             }, 'time_zone': {
                 'options': TIME_ZONE_CHOICES,
+            }, 'organization_type': {
+                'options': ORGANIZATIONS_TYPES,
             }
         },
         'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),

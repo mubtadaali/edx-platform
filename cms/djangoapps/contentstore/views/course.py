@@ -31,6 +31,7 @@ from openedx.core.djangoapps.content.course_overviews.models import CourseOvervi
 from openedx.core.djangoapps.waffle_utils import WaffleSwitchNamespace
 from openedx.features.course_experience.waffle import waffle as course_experience_waffle
 from openedx.features.course_experience.waffle import ENABLE_COURSE_ABOUT_SIDEBAR_HTML
+from openedx.features.edly.utils import get_edx_org_from_cookie, get_enabled_organizations
 from six import text_type
 
 from contentstore.course_group_config import (
@@ -74,7 +75,14 @@ from openedx.features.content_type_gating.partitions import CONTENT_TYPE_GATING_
 from openedx.features.content_type_gating.models import ContentTypeGatingConfig
 from student import auth
 from student.auth import has_course_author_access, has_studio_read_access, has_studio_write_access
-from student.roles import CourseCreatorRole, CourseInstructorRole, CourseStaffRole, GlobalStaff, UserBasedRole
+from student.roles import (
+    CourseCreatorRole,
+    CourseInstructorRole,
+    CourseStaffRole,
+    GlobalCourseCreatorRole,
+    GlobalStaff,
+    UserBasedRole,
+)
 from util.course import get_link_for_about_page
 from util.date_utils import get_default_time_display
 from util.json_request import JsonResponse, JsonResponseBadRequest, expect_json
@@ -312,6 +320,9 @@ def _update_end_date(request, course_key_string, end_date):
     Method to update end date of a course
     """
     course_key = CourseKey.from_string(course_key_string)
+    if not has_studio_read_access(request.user, course_key):
+        raise PermissionDenied()
+
     course_details = CourseDetails.fetch(course_key)
     archive_settings = {
         'start_date': course_details.start_date,
@@ -330,9 +341,6 @@ def course_rerun_handler(request, course_key_string):
     GET
         html: return html page with form to rerun a course for the given course id
     """
-    # Only global staff (PMs) are able to rerun courses during the soft launch
-    if not GlobalStaff().has_user(request.user):
-        raise PermissionDenied()
     course_key = CourseKey.from_string(course_key_string)
     with modulestore().bulk_operations(course_key):
         course_module = get_course_and_check_access(course_key, request.user, depth=3)
@@ -504,7 +512,8 @@ def _accessible_courses_list_from_groups(request):
 
     instructor_courses = UserBasedRole(request.user, CourseInstructorRole.ROLE).courses_with_role()
     staff_courses = UserBasedRole(request.user, CourseStaffRole.ROLE).courses_with_role()
-    all_courses = filter(filter_ccx, instructor_courses | staff_courses)
+    site_courses = UserBasedRole(request.user, GlobalCourseCreatorRole.ROLE).courses_with_role()
+    all_courses = filter(filter_ccx, instructor_courses | staff_courses | site_courses)
     courses_list = []
     course_keys = {}
 
@@ -546,8 +555,14 @@ def course_listing(request):
 
     optimization_enabled = GlobalStaff().has_user(request.user) and \
         WaffleSwitchNamespace(name=WAFFLE_NAMESPACE).is_enabled(u'enable_global_staff_optimization')
-
     org = request.GET.get('org', '') if optimization_enabled else None
+
+    enabled_organizations = get_enabled_organizations(request)
+    org = enabled_organizations[0].get('short_name', '') if enabled_organizations else None
+
+    edly_user_info_cookie = request.COOKIES.get(settings.EDLY_USER_INFO_COOKIE_NAME, None)
+    org = get_edx_org_from_cookie(edly_user_info_cookie)
+
     courses_iter, in_process_course_actions = get_courses_accessible_to_user(request, org)
     user = request.user
     libraries = _accessible_libraries_iter(request.user, org) if LIBRARIES_ENABLED else []
@@ -601,7 +616,7 @@ def course_listing(request):
         u'user': user,
         u'request_course_creator_url': reverse('request_course_creator'),
         u'course_creator_status': _get_course_creator_status(user),
-        u'rerun_creator_status': GlobalStaff().has_user(user),
+        u'rerun_creator_status': _get_course_creator_status(user),
         u'allow_unicode_course_id': settings.FEATURES.get(u'ALLOW_UNICODE_COURSE_ID', False),
         u'allow_course_reruns': settings.FEATURES.get(u'ALLOW_COURSE_RERUNS', True),
         u'optimization_enabled': optimization_enabled
@@ -732,7 +747,7 @@ def get_courses_accessible_to_user(request, org=None):
         except AccessListFallback:
             # user have some old groups or there was some error getting courses from django groups
             # so fallback to iterating through all courses
-            courses, in_process_course_actions = _accessible_courses_summary_iter(request)
+            courses, in_process_course_actions = _accessible_courses_summary_iter(request, org)
     return courses, in_process_course_actions
 
 

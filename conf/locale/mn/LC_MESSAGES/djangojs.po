@@ -3287,7 +3287,7 @@ msgstr "Нэвтрэх"
 
 #: common/static/bundles/SingleSupportForm.js
 msgid "Create an {platform} account"
-msgstr "Бүртгэл үүсгэх"
+msgstr "{platform} акаунт үүсгэнэ үү"
 
 #: common/static/bundles/SingleSupportForm.js
 #: lms/djangoapps/support/static/support/jsx/logged_out_user.jsx
@@ -8825,7 +8825,7 @@ msgstr ""
 
 #: lms/templates/student_account/register.underscore
 msgid "Already have an account?"
-msgstr "{platformName}-д бүртгэлтэй юу?"
+msgstr "Танд акаунт байгаа юу?"
 
 #: lms/templates/student_account/register.underscore
 msgid "Sign in."

@@ -350,6 +350,10 @@ FEATURES = {
     # Show the language selector in the footer
     'SHOW_FOOTER_LANGUAGE_SELECTOR': False,
 
+    # If set to True, new Studio users won't be able to author courses unless
+    # an Open edX admin has added them to the course creator group.
+    'ENABLE_CREATOR_GROUP': True,
+
     # Write new CSM history to the extended table.
     # This will eventually default to True and may be
     # removed since all installs should have the separate
@@ -406,6 +410,9 @@ FEATURES = {
 
     # Whether to display the account deletion section the account settings page
     'ENABLE_ACCOUNT_DELETION': True,
+
+    # Figures flags
+    'FIGURES_IS_MULTISITE': True,
 }
 
 # Settings for the course reviews tool template and identification key, set either to None to disable course reviews
@@ -1247,6 +1254,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'edx_rest_framework_extensions.auth.jwt.middleware.JwtAuthCookieMiddleware',
 
+    'openedx.features.edly.middleware.SettingsOverrideMiddleware',
+
     # Allows us to define redirects via Django admin
     'django_sites_extensions.middleware.RedirectMiddleware',
 
@@ -1327,6 +1336,8 @@ MIDDLEWARE_CLASSES = [
     # This must be last
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
 
+    'openedx.features.edly.middleware.EdlyOrganizationAccessMiddleware',
+
     'edly_panel_app.middleware.EdlyUserActivityMiddleware',
 ]
 
@@ -1349,6 +1360,11 @@ EDLY_USER_ROLES = {
 STUDIO_DOMAIN_PREFIX = 'studio.'
 
 CSRF_TRUSTED_ORIGINS = ['.edly.io']
+
+ENABLE_EDLY_ORGANIZATIONS_SWITCH = 'enable_edly_organizations'
+EDLY_USER_INFO_COOKIE_NAME = 'edly-user-info'
+EDLY_COOKIE_SECRET_KEY = 'EDLY-COOKIE-SECRET-KEY'
+EDLY_JWT_ALGORITHM = 'HS256'
 
 # Clickjacking protection can be disbaled by setting this to 'ALLOW'
 X_FRAME_OPTIONS = 'DENY'
@@ -2321,7 +2337,11 @@ INSTALLED_APPS = [
     # edx-drf-extensions
     'csrf.apps.CsrfAppConfig',  # Enables frontend apps to retrieve CSRF tokens.
 
+    # Edly apps
+    'openedx.features.edly',
     'edly_panel_app',
+    'openedx.features.redhouse_features',
+    'openedx.features.redhouse_features.registration',
 ]
 
 ######################### CSRF #########################################
@@ -3048,6 +3068,9 @@ ACCOUNT_VISIBILITY_CONFIGURATION = {
         "accomplishments_shared",
         "extended_profile",
         "secondary_email",
+        "sch_org",
+        "phone",
+        "organization_type"
     ]
 }
 
