@@ -17,7 +17,14 @@
             formErrorsTpl: formErrorsTpl,
             formErrorsJsHook: 'js-form-errors',
             defaultFormErrorsTitle: gettext('An error occurred.'),
-            events: {},
+            // Redhouse custom events
+            events: {
+                'click .js-register': 'submitForm',
+                'click .login-provider': 'thirdPartyAuth',
+                'click input[required][type="checkbox"]': 'liveValidateHandler',
+                'blur input[required], textarea[required], select[required]': 'liveValidateHandler',
+                'focus input[required], textarea[required], select[required]': 'handleRequiredInputFocus'
+            },
             errors: [],
             formType: '',
             $form: {},
