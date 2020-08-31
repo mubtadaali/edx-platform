@@ -42,7 +42,7 @@ from openedx.core.djangoapps.user_api.errors import (
 )
 from openedx.core.djangoapps.user_api.preferences.api import update_user_preferences
 from openedx.core.lib.api.view_utils import add_serializer_errors
-from openedx.features.redhouse_features.registration.models import AdditionalRegistrationFields
+from openedx.features.redhouse_features.registration.models import AdditionalRegistrationFields, ORGANIZATIONS_TYPES
 
 from .serializers import (
     AccountLegacyProfileSerializer, AccountUserSerializer,
@@ -639,6 +639,42 @@ def get_email_existence_validation_error(email):
     return _validate(_validate_email_doesnt_exist, errors.AccountEmailAlreadyExists, email)
 
 
+# custom field error method
+def get_sch_org_error(sch_org):
+    """Get validation error message for when school / organization
+    is invalid in someway.
+
+    :param sch_org: The proposed school/organization name.
+    :param default: The message to default to in case of no error.
+    :return: Validation error message."""
+
+    return _validate(_validate_sch_org, errors.SchOrgInvalid, sch_org)
+
+
+# custom field error method
+def get_phone_error(phone):
+    """Get validation error message for when phone
+        is invalid in someway.
+
+        :param phone: The proposed phone.
+        :param default: The message to default to in case of no error.
+        :return: Validation error message."""
+
+    return _validate(_validate_phone, errors.PhoneInvalid, phone)
+
+
+# custom field error method
+def get_organization_type_error(organization_type):
+    """Get validation error message for when phone
+            is invalid in someway.
+
+            :param phone: The proposed phone.
+            :param default: The message to default to in case of no error.
+            :return: Validation error message."""
+
+    return _validate(_validate_organization_type, errors.OrganizationTypeInvalid, organization_type)
+
+
 def _get_user_and_profile(username):
     """
     Helper method to return the legacy user and profile objects based on username.
@@ -879,6 +915,32 @@ def _validate_length(data, min, max, err):
         raise errors.AccountDataBadLength(err)
 
 
+def _validate_blank_space(data, message):
+    """Checks whether the input data is blank or not.
+
+        :param data: The data to check for data is not blank.
+        :param message: The error message to throw back if data is blank.
+        :return: None
+        :raises: ValidationError
+
+    """
+    if data and len(data.strip()) == 0:
+        raise ValidationError(message)
+
+
+def _validate_organization_type_value(organization_type, message):
+    """Checks whether the input data is valid option or not.
+
+        :param organization_type: The organization_type to check valid option.
+        :param message: The error message to throw back if organization type is not from options.
+        :return: None
+        :raises: ValidationError
+
+    """
+    if organization_type not in zip(*ORGANIZATIONS_TYPES)[0]:
+        raise ValidationError(message)
+
+
 def _validate_unicode(data, err=u"Input not valid unicode"):
     """Checks whether the input data is valid unicode or not.
 
@@ -895,3 +957,89 @@ def _validate_unicode(data, err=u"Input not valid unicode"):
         unicode(data)
     except UnicodeError:
         raise UnicodeError(err)
+
+
+# custom field validator
+def _validate_sch_org(sch_org):
+    """Validate the school / organization name.
+
+        Arguments:
+            sch_org: The proposed school / organization name.
+
+        Returns:
+            None
+
+        Raises:
+            errors.SchOrgInvalid
+
+        """
+    try:
+        _validate_unicode(sch_org)
+        _validate_type(sch_org, basestring, accounts.SCH_ORG_BAD_TYPE_MSG)
+        _validate_length(sch_org, accounts.SCH_ORG_MIN_LENGTH, accounts.SCH_ORG_MAX_LENGTH,
+                         accounts.SCH_ORG_BAD_LENGTH_MSG)
+        _validate_blank_space(sch_org, accounts.REQUIRED_FIELD_SCH_ORG_MSG)
+    except (UnicodeError, errors.AccountDataBadType, errors.AccountDataBadLength) as invalid_sch_org_err:
+        raise errors.SchOrgInvalid(text_type(invalid_sch_org_err))
+    except ValidationError as validation_err:
+        raise errors.SchOrgInvalid(validation_err.message)
+
+
+# custom field validator
+def _validate_phone(phone):
+    """Validate the phone.
+
+        Arguments:
+            phone: The proposed phone.
+
+        Returns:
+            None
+
+        Raises:
+            errors.PhoneInvalid
+
+        """
+    try:
+        _validate_unicode(phone)
+        _validate_type(phone, basestring, accounts.PHONE_BAD_TYPE_MSG)
+        _validate_length(phone, accounts.PHONE_MIN_LENGTH, accounts.PHONE_MAX_LENGTH,
+                         accounts.PHONE_BAD_LENGTH_MSG)
+        _validate_blank_space(phone, accounts.REQUIRED_FIELD_PHONE_MSG)
+    except (UnicodeError, errors.AccountDataBadType, errors.AccountDataBadLength) as invalid_phone_err:
+        raise errors.PhoneInvalid(text_type(invalid_phone_err))
+    except ValidationError as validation_err:
+        raise errors.PhoneInvalid(validation_err.message)
+
+
+# custom field validator
+def _validate_organization_type(organization_type):
+    """Validate the organization type.
+
+        Arguments:
+            organization_type: The proposed phone.
+
+        Returns:
+            None
+
+        Raises:
+            errors.OrganizationTypeInvalid
+
+        """
+    try:
+        if organization_type:
+            _validate_unicode(organization_type)
+            _validate_type(organization_type, basestring, accounts.ORGANIZATION_TYPE_BAD_TYPE_MSG)
+            _validate_length(organization_type, accounts.ORGANIZATION_TYPE_MIN_LENGTH,
+                             accounts.ORGANIZATION_TYPE_MAX_LENGTH,
+                             accounts.ORGANIZATION_TYPE_BAD_LENGTH_MSG)
+            _validate_blank_space(organization_type, accounts.REQUIRED_FIELD_ORGANIZATION_TYPE_MSG)
+            invalid_organization_type_message = accounts.ORGANIZATION_TYPE_INVALID_MSG.format(
+                organization_type=organization_type
+            )
+            _validate_organization_type_value(organization_type, invalid_organization_type_message)
+        else:
+            raise errors.OrganizationTypeInvalid(accounts.REQUIRED_FIELD_ORGANIZATION_TYPE_MSG)
+    except (UnicodeError, errors.AccountDataBadType, errors.AccountDataBadLength) as invalid_organization_type_err:
+        raise errors.OrganizationTypeInvalid(text_type(invalid_organization_type_err))
+    except ValidationError as validation_err:
+        raise errors.OrganizationTypeInvalid(validation_err.message)
