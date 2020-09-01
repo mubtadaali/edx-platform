@@ -28,8 +28,13 @@ CatalogPreviewFactory({
     <li>
       <a href="${reverse('api_admin:catalog-edit', args=(catalog.id,))}">${catalog.name}</a>&nbsp;
       (<a
+<<<<<<< HEAD
           href="${'{root}/{id}/csv/'.format(root=catalog_api_catalog_endpoint, id=catalog.id)}"
           rel="noopener" target="_blank">${_("Download CSV")}</a>)
+=======
+          href="${'{root}/{id}/csv/'.format(root=catalog_api_catalog_endpoint, id=catalog.id)}" rel="noopener"
+          target="_blank">${_("Download CSV")}</a>)
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
     </li>
     % endfor
   </ul>

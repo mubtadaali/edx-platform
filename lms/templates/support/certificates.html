@@ -11,8 +11,13 @@ from openedx.core.djangolib.js_utils import js_escaped_string
 <%block name="js_extra">
 <%static:require_module module_name="support/js/certificates_factory" class_name="CertificatesFactory">
     new CertificatesFactory({
+<<<<<<< HEAD
         userFilter: '${ user_filter | n, js_escaped_string }',
         courseFilter: '${ course_filter | n, js_escaped_string }'
+=======
+        userFilter: '${ user_filter  | n, js_escaped_string}',
+        courseFilter: '${course_filter  | n, js_escaped_string}'
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
     });
 </%static:require_module>
 </%block>

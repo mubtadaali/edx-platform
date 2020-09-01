@@ -1,6 +1,7 @@
 """ Overrides for Docker-based devstack. """
 
 from .devstack import *  # pylint: disable=wildcard-import, unused-wildcard-import
+<<<<<<< HEAD
 
 # Docker does not support the syslog socket at /dev/log. Rely on the console.
 LOGGING['handlers']['local'] = LOGGING['handlers']['tracking'] = {
@@ -82,3 +83,5 @@ COURSE_CATALOG_API_URL = 'http://edx.devstack.discovery:18381/api/v1/'
 # Uncomment the lines below if you'd like to see SQL statements in your devstack LMS log.
 # LOGGING['handlers']['console']['level'] = 'DEBUG'
 # LOGGING['loggers']['django.db.backends'] = {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False}
+=======
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71

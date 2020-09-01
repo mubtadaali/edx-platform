@@ -29,7 +29,10 @@ class SettingsType(object):
     See https://github.com/edx/edx-platform/master/lms/envs/docs/README.rst for
     further information on each Settings Type.
     """
+<<<<<<< HEAD
     AWS = u'aws'  # aws.py has been deprecated. See https://openedx.atlassian.net/browse/DEPR-14
+=======
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
     PRODUCTION = u'production'
     COMMON = u'common'
     DEVSTACK = u'devstack'
@@ -77,3 +80,12 @@ class PluginSignals(object):
 
     RELATIVE_PATH = u'relative_path'
     DEFAULT_RELATIVE_PATH = u'signals'
+
+
+class PluginContexts(object):
+    """
+    The PluginContexts enum defines dictionary field names (and defaults)
+    that can be specified by a Plugin App in order to configure the
+    additional views it would like to add context into.
+    """
+    CONFIG = u"view_context_config"

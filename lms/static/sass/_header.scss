@@ -209,7 +209,13 @@
           position: absolute;
           background-color: theme-color("inverse");
           color: theme-color("secondary");
+<<<<<<< HEAD
           @include right(30px);
+=======
+
+          @include right(30px);
+
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
           top: 55px;
           z-index: 10;
 

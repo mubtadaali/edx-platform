@@ -139,6 +139,7 @@
                     var fields = html || '',
                         formErrorsTitle = gettext('An error occurred.'),
                         renderHtml = _.template(this.tpl)({
+<<<<<<< HEAD
                           /* We pass the context object to the template so that
                            * we can perform variable interpolation using sprintf
                            */
@@ -153,6 +154,23 @@
                             registerFormSubmitButtonText: this.registerFormSubmitButtonText
                         }
                         });
+=======
+                            /* We pass the context object to the template so that
+                             * we can perform variable interpolation using sprintf
+                             */
+                            context: {
+                                fields: fields,
+                                currentProvider: this.currentProvider,
+                                syncLearnerProfileData: this.syncLearnerProfileData,
+                                providers: this.providers,
+                                hasSecondaryProviders: this.hasSecondaryProviders,
+                                platformName: this.platformName,
+                                autoRegisterWelcomeMessage: this.autoRegisterWelcomeMessage,
+                                registerFormSubmitButtonText: this.registerFormSubmitButtonText
+                            }
+                        });
+
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
                     HtmlUtils.setHtml($(this.el), HtmlUtils.HTML(renderHtml));
 
                     this.postRender();
@@ -276,6 +294,9 @@
                         if ($input.length > 0 && !isCheckbox) {
                             handleInputBehavior($input);
                         }
+                    });
+                    $('#register-confirm_email').bind('cut copy paste', function(e) {
+                        e.preventDefault();
                     });
                     setTimeout(handleAutocomplete, 1000);
                 },

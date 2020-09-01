@@ -2,13 +2,22 @@
 Information about the release line of this Open edX code.
 """
 
+<<<<<<< HEAD
 import unittest
 
+=======
+
+import unittest
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
 
 # The release line: an Open edX release name ("ficus"), or "master".
 # This should always be "master" on the master branch, and will be changed
 # manually when we start release-line branches, like open-release/ficus.master.
+<<<<<<< HEAD
 RELEASE_LINE = "ironwood"
+=======
+RELEASE_LINE = "juniper"
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
 
 
 def doc_version():

@@ -1,10 +1,16 @@
 """
 Template module
 """
+<<<<<<< HEAD
 from string import Template
 
 from lxml import etree
+=======
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
 
+from string import Template
+
+from lxml import etree
 from xmodule.raw_module import RawDescriptor
 from xmodule.x_module import DEPRECATION_VSCOMPAT_EVENT, XModule
 
@@ -57,7 +63,7 @@ class CustomTagDescriptor(RawDescriptor):
                 raise Exception("Could not find impl attribute in customtag {0}"
                                 .format(self.location))
 
-        params = dict(xmltree.items())
+        params = dict(list(xmltree.items()))
 
         # cdodge: look up the template as a module
         template_loc = self.location.replace(category='custom_tag_template', name=template_name)

@@ -146,12 +146,6 @@
                 this.trigger('password-help');
             },
 
-            accountRecovery: function(event) {
-                event.preventDefault();
-
-                this.trigger('account-recovery-help');
-            },
-
             getFormData: function() {
                 var obj = {},
                     $form = this.$form,

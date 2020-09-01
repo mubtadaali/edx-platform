@@ -1,44 +1,41 @@
 """HTTP end-points for the User API. """
 
+
 from django.contrib.auth.models import User
 from django.core.exceptions import NON_FIELD_ERRORS, PermissionDenied, ValidationError
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseForbidden
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
-from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import authentication, generics, status, viewsets
-from rest_framework.exceptions import ParseError
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from six import text_type
-
-import accounts
-from django_comment_common.models import Role
 from edx_rest_framework_extensions.auth.session.authentication import SessionAuthenticationAllowInactiveUser
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx import locator
 from opaque_keys.edx.keys import CourseKey
-from openedx.core.djangoapps.user_api.accounts.api import check_account_exists
-from openedx.core.djangoapps.user_api.api import (
-    RegistrationFormFactory,
-    get_login_session_form,
-    get_password_reset_form
-)
-from openedx.core.djangoapps.user_api.helpers import require_post_params, shim_student_view
+from rest_framework import authentication, generics, status, viewsets
+from rest_framework.exceptions import ParseError
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from six import text_type
+
+from openedx.core.djangoapps.django_comment_common.models import Role
+from openedx.core.djangoapps.user_api import accounts
+from openedx.core.lib.api.view_utils import require_post_params
 from openedx.core.djangoapps.user_api.models import UserPreference
 from openedx.core.djangoapps.user_api.preferences.api import get_country_time_zones, update_email_opt_in
-from openedx.core.djangoapps.user_api.serializers import CountryTimeZoneSerializer, UserPreferenceSerializer, UserSerializer
-from openedx.core.djangoapps.user_authn.cookies import set_logged_in_cookies
-from openedx.core.djangoapps.user_authn.views.register import create_account_with_params
+from openedx.core.djangoapps.user_api.serializers import (
+    CountryTimeZoneSerializer,
+    UserPreferenceSerializer,
+    UserSerializer
+)
 from openedx.core.lib.api.permissions import ApiKeyHeaderPermission
 from openedx.features.edly.utils import create_user_link_with_edly_sub_organization
 from student.helpers import AccountValidationError
 from util.json_request import JsonResponse
 
 
+<<<<<<< HEAD
 class LoginSessionView(APIView):
     """HTTP end-points for logging in users. """
 
@@ -193,6 +190,8 @@ class PasswordResetView(APIView):
         return HttpResponse(get_password_reset_form().to_json(), content_type="application/json")
 
 
+=======
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     DRF class for interacting with the User ORM object
@@ -237,7 +236,7 @@ class UserPreferenceViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (ApiKeyHeaderPermission,)
     queryset = UserPreference.objects.all()
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ("key", "user")
+    filterset_fields = ("key", "user")
     serializer_class = UserPreferenceSerializer
     paginate_by = 10
     paginate_by_param = "page_size"
@@ -287,7 +286,7 @@ class UpdateEmailOptInPreference(APIView):
         except InvalidKeyError:
             return HttpResponse(
                 status=400,
-                content="No course '{course_id}' found".format(course_id=course_id),
+                content=u"No course '{course_id}' found".format(course_id=course_id),
                 content_type="text/plain"
             )
         # Only check for true. All other values are False.

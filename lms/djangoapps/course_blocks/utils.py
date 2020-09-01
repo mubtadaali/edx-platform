@@ -1,9 +1,11 @@
 """
 Common utilities for use along with the course blocks.
 """
+
+
 import json
 
-from courseware.models import StudentModule
+from lms.djangoapps.courseware.models import StudentModule
 
 
 def get_student_module_as_dict(user, course_key, block_key):
@@ -18,7 +20,11 @@ def get_student_module_as_dict(user, course_key, block_key):
     Returns:
         StudentModule as a (possibly empty) dict.
     """
+<<<<<<< HEAD
     if not user.is_authenticated():
+=======
+    if not user.is_authenticated:
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
         return {}
 
     try:

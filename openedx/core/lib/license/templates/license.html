@@ -40,7 +40,11 @@ def parse_license(lic):
         enabled = ["zero"]
         version = license_options.get("ver", "1.0")
     %>
+<<<<<<< HEAD
     <a rel="license noopener" href="https://creativecommons.org/licenses/${'-'.join(enabled)}/${version}/" target="_blank">
+=======
+    <a rel="license" href="https://creativecommons.org/licenses/${'-'.join(enabled)}/${version}/" rel="noopener" target="_blank">
+>>>>>>> 63ff8fe07fcec03d5d89d251a7a80f907e3e3d71
     % if button:
         <img src="https://licensebuttons.net/l/${'-'.join(enabled)}/${version}/${button_size}.png"
              alt="${license}"
