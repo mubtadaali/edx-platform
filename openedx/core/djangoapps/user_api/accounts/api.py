@@ -7,7 +7,7 @@ import logging
 from pytz import UTC
 
 from django.utils.translation import override as override_language, ugettext as _
-from django.db import transaction, IntegrityError
+from django.db import transaction, IntegrityError, OperationalError
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.core.validators import validate_email, ValidationError
@@ -183,15 +183,33 @@ def update_account_settings(requesting_user, update, username=None):
             }
             del update[read_only_field]
 
+    # custom field update code
     additional_fields = {"sch_org", "phone", "organization_type"}.intersection(set(update.keys()))
     if additional_fields:
-        instance = AdditionalRegistrationFields.objects.filter(user=existing_user).first()
-        if instance:
-            for field in list(additional_fields):
-                setattr(instance, field, update[field])
-            instance.save()
-        else:
-            log.error('Additional fields record does not exist')
+        field_error_methods = {
+            'sch_org': get_sch_org_error,
+            'phone': get_phone_error,
+            'organization_type': get_organization_type_error
+        }
+        data = {}
+        for key in additional_fields:
+            message = field_error_methods[key](update[key])
+            if message:
+                field_errors[key] = {'developer_message': message, 'user_message': message}
+            else:
+                data[key] = update[key]
+        if data:
+            instance = AdditionalRegistrationFields.objects.filter(user=existing_user).first()
+            if instance:
+                instance.__dict__.update(**data)
+                instance.save()
+            else:
+                additional_fields_record = AdditionalRegistrationFields(**data)
+                additional_fields_record.user = requesting_user
+                try:
+                    additional_fields_record.save()
+                except OperationalError as e:
+                    log.error(e, exc_info=True)
 
     user_serializer = AccountUserSerializer(existing_user, data=update)
     legacy_profile_serializer = AccountLegacyProfileSerializer(existing_user_profile, data=update)
