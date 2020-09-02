@@ -64,6 +64,7 @@ def get_base_template_context(site):
         'mobile_store_urls': get_config_value_from_site_or_settings('MOBILE_STORE_URLS', site=site),
 
         # Context processor values for dynamic theming
+        'LMS_ROOT_URL': settings.LMS_ROOT_URL,
         'edly_colors_config': get_theme_colors(),
         'edly_fonts_config': configuration_helpers.get_dict('FONTS', DEFAULT_FONTS_DICT),
         'edly_branding_config': configuration_helpers.get_dict('BRANDING', DEFAULT_BRANDING_DICT),
