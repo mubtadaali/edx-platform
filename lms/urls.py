@@ -288,6 +288,7 @@ urlpatterns += [
     # TODO: These views need to be updated before they work
     url(r'^calculate$', util_views.calculate),
 
+    url(r'^events/?$', branding_views.courses, name='events'),
     url(r'^courses/?$', branding_views.courses, name='courses'),
 
     #About the course
