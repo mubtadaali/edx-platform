@@ -13,7 +13,10 @@ from openedx.core.djangoapps.user_api.accounts.api import (
     get_confirm_email_validation_error,
     get_country_validation_error,
     get_name_validation_error,
+    get_organization_type_error,  # custom field error
     get_password_validation_error,
+    get_phone_error,  # custom field error
+    get_sch_org_error,  # custom field error
     get_username_validation_error,
     get_username_existence_validation_error
 )
@@ -158,13 +161,31 @@ class RegistrationValidationView(APIView):
         country = request.data.get('country')
         return get_country_validation_error(country)
 
+    # custom field handler
+    def sch_org_handler(self, request):
+        sch_org = request.data.get('sch_org')
+        return get_sch_org_error(sch_org)
+
+    # custom field handler
+    def phone_handler(self, request):
+        phone = request.data.get('phone')
+        return get_phone_error(phone)
+
+    # custom field handler
+    def organization_type_handler(self, request):
+        organization_type = request.data.get('organization_type')
+        return get_organization_type_error(organization_type)
+
     validation_handlers = {
         "name": name_handler,
         "username": username_handler,
         "email": email_handler,
         "confirm_email": confirm_email_handler,
         "password": password_handler,
-        "country": country_handler
+        "country": country_handler,
+        "sch_org": sch_org_handler,  # custom field handler
+        "phone": phone_handler,  # custom field handler
+        "organization_type": organization_type_handler  # custom field handler
     }
 
     def post(self, request):

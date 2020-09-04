@@ -63,6 +63,24 @@ class AccountCountryInvalid(AccountRequestError):
     pass
 
 
+# custom field exception
+class SchOrgInvalid(UserAPIRequestError):
+    """School / Organization is invalid"""
+    pass
+
+
+# custom field exception
+class PhoneInvalid(UserAPIRequestError):
+    """Phone is invalid"""
+    pass
+
+
+# custom field exception
+class OrganizationTypeInvalid(UserAPIRequestError):
+    """organization type is invalid"""
+    pass
+
+
 class AccountDataBadLength(AccountRequestError):
     """The requested account data is either too short or too long. """
     pass

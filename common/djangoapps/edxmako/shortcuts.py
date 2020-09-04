@@ -38,7 +38,9 @@ def marketing_link(name):
     """
     # link_map maps URLs from the marketing site to the old equivalent on
     # the Django site
-    link_map = settings.MKTG_URL_LINK_MAP
+    # pick up the MKTG_URL_LINK_MAP from site configurations for the REDHOUSE specific redirection
+    link_map = configuration_helpers.get_value('MKTG_URL_LINK_MAP', settings.MKTG_URL_LINK_MAP)
+
     enable_mktg_site = configuration_helpers.get_value(
         'ENABLE_MKTG_SITE',
         settings.FEATURES.get('ENABLE_MKTG_SITE', False)
